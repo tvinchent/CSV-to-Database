@@ -1,6 +1,4 @@
 <?php
-// CSV-to-Database
-// Take the information from a uploaded CSV, check data and then, put it into a MySQL database.
 // Notice: be sure data is set to ON in php.ini
 
 /*
@@ -12,14 +10,14 @@ Axe d'amelioration:
 - passer en parametre et en variable de settings les noms de la premiere colonne a tester.
 Les passer à l'interieur d'un array. Modifier le check et insert into associé. 
 Les inserer aussi dans le message d'erreur pour que l'utilisateur sache ce qu'il doit mettre.
-Les isoler dans un fichier setting.php
-- isoler les controles (essayer avec error handling / exception (cf w3school) pour la lisibilite du code):
+Les isoler dans le fichier setting.php
+- isoler les controles (essayer avec error handling / exception (cf w3school) pour la lisibilite du code)
 - effectuer plus de verification sur le CSV (aprés la refactorisation car après cette opération, le code atteindra un stade difficilement maintenable)
 - afficher le contenu et demander si cela correspond
-- verifier si les champs de la table correspondent au nom de la premiere colonne
+- verifier si les champs de la table de la BDD correspondent au nom de la premiere colonne du CSV
 A afficher dès l'ouverture car ce test peut etre effectué au préalable en faisant une comparaison settings/table
 
-Refactorisation ergonomique (qui suivent le parcours utilisateur):
+Refactorisation ergonomique (qui suit le parcours utilisateur):
 - formulaire
 - affichage erreur (exit(); si erreur): si fichier soumis, fonction qui test si le fichier soumis est valide
 - check contenu du CSV (juste verifier si la premiere ligne correspond bien a la BDD): si fichier soumis et valide
@@ -27,7 +25,7 @@ Refactorisation ergonomique (qui suivent le parcours utilisateur):
 */
 
 // include setting
-if (file_exists("setting_prod.php")) include_once 'setting_prod.php'; else include_once 'setting.php';
+if (file_exists("include/setting_prod.php")) include_once 'include/setting_prod.php'; else include_once 'include/setting.php';
 
 if(isset($_POST["submit"]) && isset($_FILES["csv"])){
 	if($_FILES["csv"]["error"] == 0) {
