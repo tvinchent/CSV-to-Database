@@ -6,11 +6,6 @@
 /*
 Axe d'amelioration:
 - mapper avec les bonnes données
-- passer en parametre et en variable de settings la connexion bdd
-!! faire 2 fichiers de setting pour ne pas publier les acces clients !!
-pour cela, ajouter un parametre DEV / STAGE / PROD
-pointer vers different fichier de setting selon la valeur
-gitignore le setting-prod
 - tester sur le serveur milford
 - transformer en plugin wordpress
 - update et non insert si donnée déjà existantes
@@ -29,8 +24,10 @@ Refactorisation ergonomique (qui suivent le parcours utilisateur):
 - affichage erreur (exit(); si erreur): si fichier soumis, fonction qui test si le fichier soumis est valide
 - check contenu du CSV (juste verifier si la premiere ligne correspond bien a la BDD): si fichier soumis et valide
 - envoie BDD: si contenu du CSV ok
-
 */
+
+// include setting
+if (file_exists("setting_prod.php")) include_once 'setting_prod.php'; else include_once 'setting.php';
 
 if(isset($_POST["submit"]) && isset($_FILES["csv"])){
 	if($_FILES["csv"]["error"] == 0) {
@@ -41,7 +38,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
             $firstline = explode(',', $lines[0]);
             // check the first line concordance
             if($firstline[0]=="name" && $firstline[1]=="age" && $firstline[2]=="skill"){
-                $db = new PDO('mysql:host=localhost;dbname=test;charset=utf8','root','');
+                $db = new PDO('mysql:host='.$dbHost.';dbname='.$dbName.';charset=utf8', $dbUsername, $dbPassword);
                 // delete the header column
                 $lines = array_slice($lines, 1);
                 // parse every lines
@@ -55,7 +52,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                     // remove last comma
                     $value_for_db_insert = substr($value_for_db_insert,0,strlen($value_for_db_insert)-3);
                     // db query
-                    $result = $db->exec("INSERT INTO fromCSV(val1, val2, val3) VALUES(".$value_for_db_insert.")");
+                    $result = $db->exec("INSERT INTO $dbTable(val1, val2, val3) VALUES(".$value_for_db_insert.")");
                 }
                 // close db connection
                 $db = null;

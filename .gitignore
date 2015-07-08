@@ -3,3 +3,4 @@ ignore-future-dev/*
 csv-to-database.sublime-project
 csv-to-database.sublime-workspace
 .DS_Store
+setting_prod.php
