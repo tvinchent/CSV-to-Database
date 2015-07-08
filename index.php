@@ -1,12 +1,19 @@
 <?php
+// CSV-to-Database
+// Take the information from a uploaded CSV, check data and then, put it into a MySQL database.
 // Notice: be sure data is set to ON in php.ini
 
 /*
 Axe d'amelioration:
 - mapper avec les bonnes données
+- passer en parametre et en variable de settings la connexion bdd
+!! faire 2 fichiers de setting pour ne pas publier les acces clients !!
+pour cela, ajouter un parametre DEV / STAGE / PROD
+pointer vers different fichier de setting selon la valeur
+gitignore le setting-prod
 - tester sur le serveur milford
+- transformer en plugin wordpress
 - update et non insert si donnée déjà existantes
-- passer en parametre et en variable de settings la connexion bdd.
 - passer en parametre et en variable de settings les noms de la premiere colonne a tester.
 Les passer à l'interieur d'un array. Modifier le check et insert into associé. 
 Les inserer aussi dans le message d'erreur pour que l'utilisateur sache ce qu'il doit mettre.
@@ -14,6 +21,8 @@ Les isoler dans un fichier setting.php
 - isoler les controles (essayer avec error handling / exception (cf w3school) pour la lisibilite du code):
 - effectuer plus de verification sur le CSV (aprés la refactorisation car après cette opération, le code atteindra un stade difficilement maintenable)
 - afficher le contenu et demander si cela correspond
+- verifier si les champs de la table correspondent au nom de la premiere colonne
+A afficher dès l'ouverture car ce test peut etre effectué au préalable en faisant une comparaison settings/table
 
 Refactorisation ergonomique (qui suivent le parcours utilisateur):
 - formulaire
