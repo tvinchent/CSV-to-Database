@@ -4,4 +4,3 @@ csv-to-database.sublime-project
 csv-to-database.sublime-workspace
 .DS_Store
 include/setting_prod.php
-.gitignore
