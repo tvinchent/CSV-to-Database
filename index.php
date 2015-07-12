@@ -3,7 +3,6 @@
 
 /*
 Axe d'amelioration:
-- insérer le csv ok / csv bad
 - mapper avec les bonnes données
 - tester sur le serveur milford
 - transformer en plugin wordpress
@@ -39,6 +38,17 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
             // check the first line concordance
             if($firstline[0]=="name" && $firstline[1]=="age" && $firstline[2]=="skill"){
                 $db = new PDO('mysql:host='.$dbHost.';dbname='.$dbName.';charset=utf8', $dbUsername, $dbPassword);
+                // db query: check if table is empty
+                $selectall = $db->query("SELECT * FROM $dbTable");
+                $result = $selectall->fetch();
+                $counttable = (count($result));
+                // if not empty: delete current value before inserting
+                if($counttable > 1){
+                    $delete = $db->prepare("DELETE FROM $dbTable");
+                    $delete->execute();
+                    $count = $delete->rowCount();
+                    print("Deleted $count rows.\n");
+                }
                 // delete the header column
                 $lines = array_slice($lines, 1);
                 // parse every lines
@@ -51,7 +61,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                     }
                     // remove last comma
                     $value_for_db_insert = substr($value_for_db_insert,0,strlen($value_for_db_insert)-3);
-                    // db query. Verifie si la table est vide, si oui: insert, sinon insert
+                    // then insert
                     $result = $db->exec("INSERT INTO $dbTable(val1, val2, val3) VALUES(".$value_for_db_insert.")");
                 }
                 // close db connection
