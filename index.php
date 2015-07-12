@@ -3,6 +3,7 @@
 
 /*
 Axe d'amelioration:
+- insérer le csv ok / csv bad
 - mapper avec les bonnes données
 - tester sur le serveur milford
 - transformer en plugin wordpress
@@ -14,8 +15,9 @@ Les isoler dans le fichier setting.php
 - isoler les controles (essayer avec error handling / exception (cf w3school) pour la lisibilite du code)
 - effectuer plus de verification sur le CSV (aprés la refactorisation car après cette opération, le code atteindra un stade difficilement maintenable)
 - afficher le contenu et demander si cela correspond
-- verifier si les champs de la table de la BDD correspondent au nom de la premiere colonne du CSV
+- (attente du CSV - a priori pas possible car il s'agit d'un mapping) verifier si les champs de la table de la BDD correspondent au nom de la premiere colonne du CSV
 A afficher dès l'ouverture car ce test peut etre effectué au préalable en faisant une comparaison settings/table
+- reecriture object
 
 Refactorisation ergonomique (qui suit le parcours utilisateur):
 - formulaire
@@ -26,6 +28,12 @@ Refactorisation ergonomique (qui suit le parcours utilisateur):
 
 // include setting
 if (file_exists("include/setting_prod.php")) include_once 'include/setting_prod.php'; else include_once 'include/setting.php';
+
+$db = new PDO('mysql:host='.$dbHost.';dbname='.$dbName.';charset=utf8', $dbUsername, $dbPassword);
+$result = $db->query("SELECT COUNT(*) FROM $dbTable");
+//$resultat = $result->fetch();
+$resultats = $result->rowCount();
+echo "resultat: ".$resultats;
 
 if(isset($_POST["submit"]) && isset($_FILES["csv"])){
 	if($_FILES["csv"]["error"] == 0) {
@@ -49,7 +57,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                     }
                     // remove last comma
                     $value_for_db_insert = substr($value_for_db_insert,0,strlen($value_for_db_insert)-3);
-                    // db query
+                    // db query. Verifie si la table est vide, si oui: insert, sinon insert
                     $result = $db->exec("INSERT INTO $dbTable(val1, val2, val3) VALUES(".$value_for_db_insert.")");
                 }
                 // close db connection
@@ -57,7 +65,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                 echo "Your CSV data has been successfully inserted into the database";
             }// error message
             else{
-                echo "Your CSV schema is invalid.".$firstline[0].$firstline[1].$firstline[2];
+                echo "Your CSV schema is invalid. Your document must contain this header columns: 1: ".$firstline[0]." 2: ".$firstline[1]." 3: ".$firstline[2];
             }
             
         }
