@@ -29,12 +29,6 @@ Refactorisation ergonomique (qui suit le parcours utilisateur):
 // include setting
 if (file_exists("include/setting_prod.php")) include_once 'include/setting_prod.php'; else include_once 'include/setting.php';
 
-$db = new PDO('mysql:host='.$dbHost.';dbname='.$dbName.';charset=utf8', $dbUsername, $dbPassword);
-$result = $db->query("SELECT COUNT(*) FROM $dbTable");
-//$resultat = $result->fetch();
-$resultats = $result->rowCount();
-echo "resultat: ".$resultats;
-
 if(isset($_POST["submit"]) && isset($_FILES["csv"])){
 	if($_FILES["csv"]["error"] == 0) {
         if($_FILES["csv"]["type"] == "text/csv") {
@@ -65,7 +59,8 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                 echo "Your CSV data has been successfully inserted into the database";
             }// error message
             else{
-                echo "Your CSV schema is invalid. Your document must contain this header columns: 1: ".$firstline[0]." 2: ".$firstline[1]." 3: ".$firstline[2];
+                echo "Your CSV schema is invalid. Your document header columns is: 1: ".$firstline[0]." 2: ".$firstline[1]." 3: ".$firstline[2]."<br>
+                Must be: 1: name, 2: age, 3: skill.";
             }
             
         }
