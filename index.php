@@ -3,6 +3,7 @@
 
 /*
 Axe d'amelioration:
+- voir plugin wordpress
 - refactorisation (voir les pattern pour un meilleur architecturage des erreur imbriquée, sinon juste isoler les controle en fonction)
 - transformer en plugin wordpress
 - tester sur le serveur milford
