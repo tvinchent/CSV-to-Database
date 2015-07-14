@@ -44,7 +44,7 @@ Axe d'amelioration:
 Refactorisation:
 - formulaire
 - CORE: si fichier soumis (verif upload (check CSV (prepare for BDD + envoie BDD)))
-- [fonction] verif upload: si fichier soumis, fonction qui test si le fichier soumis est valide
+- [fonction] verif upload (observer) : si fichier soumis, fonction qui test si le fichier soumis est valide
 - [fonction] parse CSV (private)
 - [fonction] parse vertically CSV (use / herite de parse)
 - [fonction] parse horizontally CSV (use / herite de parse)
@@ -57,6 +57,11 @@ Refactorisation:
 - [fonction] prepare for BDD (singleton, use / herite de delete): si contenu du CSV ok // insérer ici en dur les colonnes a delete
 - [fonction] envoie BDD (use / herite de prepare for BDD)
 */
+
+$input = array("a", "b", "c", "d", "e");
+$output = array_slice($input, -3, 2);
+print_r($output);
+echo " vala<br>";
 
 // include setting
 if (file_exists("include/setting_prod.php")) include_once 'include/setting_prod.php'; else include_once 'include/setting.php';
@@ -94,16 +99,14 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                 }
 // !!!!!!!!!!!!! END OF A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
                 // START OF SPECIFIC LINES DELETION
-                // delete the header lines
-                $lines = array_slice($lines, 1);
+// PRODUCTION SPECIFIC CODE: delete the first 2 lines
+                $lines = array_slice($lines, 2);
+// END OF PRODUCTION SPECIFIC CODE
                 // END OF SPECIFIC LINES DELETION
                 // parse every lines
                 foreach($lines as $line) {
                     // cut every element of the line to format
                     $line = explode(',', $line);
-                    // check the first columns concordance
-// !!!!!!!!!!!!! A CHANGER AVEC schema vertical, a priori en mettre 2, donc ajouter && !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                    if($firstline===$csvSchema){
                         $value_for_db_insert="'";
                         foreach ($line as $key=>$element) {
                             // START OF SPECIFIC COLUMN DELETION
@@ -118,11 +121,6 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                         // then insert
                         $result = $db->exec("INSERT INTO $dbTable VALUES(".$value_for_db_insert.")");
 // !!!!!!!!!!!!! END OF A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
-                    }
-                    else{
-// !!!!!!!!!!!!! A CHANGER AVEC message schema vertical plus précis (comme l'horizontal) !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        echo "Your CSV vertical schema is invalid.";
-                    }
                 }
 // !!!!!!!!!!!!! A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
                 // close db connection
