@@ -1,10 +1,21 @@
 <?php
 /*
 TO DO
-- refactorisation simple: juste isoler les controle en fonction
-- ajouter check vertical
+- tenter l'upload sans refacto et sans schema vertical,
+en mettant une table au bon nombre de colonne 
+en ajoutant manuellement les ligne et colonne a supp
+- refactorisation simple: juste isoler les controles en fonction
+Pour cela: fonctionnement agile, cad commitable en partie fonctionelle
+cf le CORE: commencer par factoriser la gauche, l'insérer dans le code existant
+Puis parse, l'insérer dans le code existant
+Puis parse vertically / horizontally, l'insérer dans le code existant
+Puis check vertically / horizontally, l'insérer dans le code existant
+Puis check, l'insérer dans le code existant
+Puis delete vertically / horizontally, l'insérer dans le code existant
+Puis delete, l'insérer dans le code existant
+Puis prepare, l'insérer dans le code existant
+Puis envoie BDD, l'insérer dans le code existant
 - mapping (*)
-- si possible
 --
 - voir plugin wordpress
 - transformer en plugin wordpress
@@ -16,7 +27,7 @@ TO DO
 - supprimer les lignes 1, 2 et 3
 - supprimer les colonnes 1 a 4, 6 8 et autres..
 - enlever les % juste avant l'envoie BDD car ce traitement seulement sur les valeurs inséré, pas sur les valeurs testé
-- (si il y a des lignes bien precises, les hard coder, sinon mettre 0) remplacer les 0 par null (ici donc ",,")
+- (pour les 0/null: si il y a des lignes bien precises, les hard coder, sinon mettre 0) remplacer les 0 par null (ici donc ",,")
 // mapping en lui meme
 - faire un tableau de la requete: a partir d'un tableau sans valeur superflu, en précisant dans le insert le bon ordre
 
@@ -32,13 +43,19 @@ Axe d'amelioration:
 
 Refactorisation:
 - formulaire
-- si fichier soumis (verif upload (check CSV (prepare for BDD + envoie BDD)))
+- CORE: si fichier soumis (verif upload (check CSV (prepare for BDD + envoie BDD)))
 - [fonction] verif upload: si fichier soumis, fonction qui test si le fichier soumis est valide
 - [fonction] parse CSV (private)
-- [fonction] check CSV (singleton, use / herite de parse) // insérer ici en dur les colonnes a checker
-- [fonction] delete CSV (use / herite de parse // return: array sans la ligne passé en parametre)
-- [fonction] prepare for BDD (singleton, use / herite de delete) // insérer ici en dur les colonnes a supp
-- [fonction] envoie BDD (use / herite de prepare for BDD): si contenu du CSV ok
+- [fonction] parse vertically CSV (use / herite de parse)
+- [fonction] parse horizontally CSV (use / herite de parse)
+- [fonction] check vertically CSV (private, singleton, use / herite de parse vertically)
+- [fonction] check horizontally CSV (private, singleton, use / herite de parse horizontally)
+- [fonction] check CSV (singleton, use / herite de check vertically, check horizontally) // insérer ici en dur les colonnes a checker
+- [fonction] delete vertically CSV (use / herite de parse vertically // return: array sans la ligne passé en parametre)
+- [fonction] delete horizontally CSV (use / herite de parse horizontally // return: array sans la ligne passé en parametre)
+- [fonction] delete CSV (singleton, use / herite de delete vertically, delete horizontally // return: array sans la ligne passé en parametre)
+- [fonction] prepare for BDD (singleton, use / herite de delete): si contenu du CSV ok // insérer ici en dur les colonnes a delete
+- [fonction] envoie BDD (use / herite de prepare for BDD)
 */
 
 // include setting
@@ -90,6 +107,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                         $value_for_db_insert="'";
                         foreach ($line as $key=>$element) {
                             // START OF SPECIFIC COLUMN DELETION
+                            // array slice here
                             // END OF SPECIFIC COLUMN DELETION
                             // parse every lines
                             $value_for_db_insert.=$element."', '";
