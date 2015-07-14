@@ -58,11 +58,6 @@ Refactorisation:
 - [fonction] envoie BDD (use / herite de prepare for BDD)
 */
 
-$input = array("a", "b", "c", "d", "e");
-$output = array_slice($input, -3, 2);
-print_r($output);
-echo " vala<br>";
-
 // include setting
 if (file_exists("include/setting_prod.php")) include_once 'include/setting_prod.php'; else include_once 'include/setting.php';
 
