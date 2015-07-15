@@ -4,6 +4,7 @@ TO DO
 - tenter l'upload sans refacto et sans schema vertical,
 en mettant une table au bon nombre de colonne 
 en ajoutant manuellement les ligne et colonne a supp
+- ajouter un test pour controler le format MSDOS du doc: verifier si la lines1 est définie
 - refactorisation simple: juste isoler les controles en fonction
 Pour cela: fonctionnement agile, cad commitable en partie fonctionelle
 cf le CORE: commencer par factoriser la gauche, l'insérer dans le code existant
@@ -67,8 +68,8 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
         // parse CSV
         	$csvData = file_get_contents($_FILES["csv"]["tmp_name"]);
             // parse every lines
-			$lines = explode(PHP_EOL, $csvData);
-            $firstline = explode(',', $lines[0]);
+            $lines = explode(PHP_EOL, $csvData);
+            $firstline = explode(',', $lines[2]);// PRODUCTION SPECIFIC CODE
         // check the first line concordance
             if($firstline===$csvSchema){
 // !!!!!!!!!!!!! A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
@@ -94,8 +95,15 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                 }
 // !!!!!!!!!!!!! END OF A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
                 // START OF SPECIFIC LINES DELETION
-// PRODUCTION SPECIFIC CODE: delete the first 2 lines
-                $lines = array_slice($lines, 2);
+// PRODUCTION SPECIFIC CODE
+                unset($lines[0],$lines[1],$lines[2],$lines[3],$lines[4],$lines[5],$lines[6],$lines[7],$lines[8],$lines[9]);
+                unset($lines[10]);
+                unset($lines[21],$lines[22],$lines[23],$lines[24],$lines[25],$lines[26],$lines[27],$lines[28],$lines[29]);
+                unset($lines[40],$lines[41],$lines[42],$lines[43],$lines[44],$lines[45],$lines[46],$lines[47],$lines[48]);
+                unset($lines[59]);
+                unset($lines[60],$lines[61],$lines[62],$lines[63],$lines[64],$lines[65],$lines[66],$lines[67],$lines[68],$lines[69]);
+                unset($lines[70],$lines[71],$lines[72],$lines[73],$lines[74],$lines[75],$lines[76],$lines[77],$lines[78],$lines[79]);
+                unset($lines[80],$lines[81],$lines[82],$lines[83],$lines[84],$lines[85],$lines[86]);
 // END OF PRODUCTION SPECIFIC CODE
                 // END OF SPECIFIC LINES DELETION
                 // parse every lines
@@ -127,12 +135,12 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
             else{
                 echo "Your CSV schema is invalid.";
                 echo "<br><strong>Your document header columns is: </strong>";
-                print_r($firstline);
+                var_dump($firstline);
                 echo "<br><strong>Must be: </strong>";
-                print_r($csvSchema);
+                var_dump($csvSchema);
                 echo "<br><strong>Difference: </strong>";
                 $diffArray = array_diff_assoc($firstline, $csvSchema);
-                print_r($diffArray);
+                var_dump($diffArray);
             }
             
         }
@@ -144,9 +152,6 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
     	echo "Error in upload.";
     }
 }
-else{
-	echo "Choose a file.";
-}
 
 ?>
 
@@ -155,6 +160,7 @@ else{
 <body>
 
 <!-- Upload form -->
+<p>Note: Your CSV must be at the Windows format. Open it in Excel and save it as a "<strong>Windows</strong> comma separated value"</p>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="post" enctype="multipart/form-data">
 <input type="file" name="csv"></input>
 <input type="submit" name="submit" value="Upload file"></input>

@@ -1,5 +1,6 @@
 ignore-csv-example/*
 ignore-future-dev/*
+sql/*
 csv-to-database.sublime-project
 csv-to-database.sublime-workspace
 .DS_Store
