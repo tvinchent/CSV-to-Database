@@ -1,27 +1,14 @@
 <?php
 /*
-Know bug:
-- 2 cell of the schema are problematic: they contains maybe 
-
 TO DO
-- tenter l'upload sans refacto et sans schema vertical,
-en mettant une table au bon nombre de colonne 
-en ajoutant manuellement les ligne et colonne a supp
+- ajouter la suppression de la 2eme table
+- unset valeur pour le graph
+- ecrire ce qui est en commentaire pour le moment
+
+- ajouter la ligne pour mettre à jour le graph
+- ajouter la maj du titre
 - ajouter un test pour controler le format Windows du doc: verifier si la lines1 est définie
-- refactorisation simple: juste isoler les controles en fonction (pb: je parse a chaque fois le fichier donc essayer plutot de stocker mon parse dans une global)
-Pour cela: fonctionnement agile, cad commitable en partie fonctionelle
-cf le CORE: commencer par factoriser la gauche, l'insérer dans le code existant
-Puis parse, l'insérer dans le code existant
-Puis parse vertically / horizontally, l'insérer dans le code existant
-Puis check vertically / horizontally, l'insérer dans le code existant
-Puis check, l'insérer dans le code existant
-Puis delete vertically / horizontally, l'insérer dans le code existant
-Puis delete, l'insérer dans le code existant
-Puis prepare, l'insérer dans le code existant
-Puis envoie BDD, l'insérer dans le code existant
-- mapping (*)
 --
-- voir plugin wordpress
 - transformer en plugin wordpress
 - tester sur le serveur milford
 
@@ -36,6 +23,19 @@ Puis envoie BDD, l'insérer dans le code existant
 - faire un tableau de la requete: a partir d'un tableau sans valeur superflu, en précisant dans le insert le bon ordre
 
 Axe d'amelioration:
+- faire des unset commencant a 1 et pas a 0 pour supprimer le décallage
+- refactorisation simple: juste isoler les controles en fonction (pb: je parse a chaque fois le fichier donc essayer plutot de stocker mon parse dans une global)
+Pour cela: fonctionnement agile, cad commitable en partie fonctionelle
+cf le CORE: commencer par factoriser la gauche, l'insérer dans le code existant
+Puis parse, l'insérer dans le code existant
+Puis parse vertically / horizontally, l'insérer dans le code existant
+Puis check vertically / horizontally, l'insérer dans le code existant
+Puis check, l'insérer dans le code existant
+Puis delete vertically / horizontally, l'insérer dans le code existant
+Puis delete, l'insérer dans le code existant
+Puis prepare, l'insérer dans le code existant
+Puis envoie BDD, l'insérer dans le code existant
+- ajouter la possibilité de specifier s'il s'agit d'un format mac ou windows, mettre par défault le format du systeme (en reperant les var d'env)
 - améliorer la lisbilité du message d'erreur du controle de schema
 - ne pas supprimer de colonnes (pas de array slice), plutot faire des references
 - refactorisation des erreurs: voir les pattern pour un meilleur architecturage des erreurs imbriquée
@@ -99,15 +99,18 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                     }
     // !!!!!!!!!!!!! END OF A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
                     // START OF SPECIFIC LINES DELETION
+                    // special care: 1 row shift. Example: if you want to delete the line 41 of your CSV, you have to unset: unset($lines[42]);
+                    // if I unset 29, I need to unset 28
     // PRODUCTION SPECIFIC CODE
                     unset($lines[0],$lines[1],$lines[2],$lines[3],$lines[4],$lines[5],$lines[6],$lines[7],$lines[8],$lines[9]);
-                    unset($lines[10]);
-                    unset($lines[21],$lines[22],$lines[23],$lines[24],$lines[25],$lines[26],$lines[27],$lines[28],$lines[29]);
-                    unset($lines[40],$lines[41],$lines[42],$lines[43],$lines[44],$lines[45],$lines[46],$lines[47],$lines[48]);
-                    unset($lines[59]);
+                    unset($lines[20],$lines[21],$lines[22],$lines[23],$lines[24],$lines[25],$lines[26],$lines[27],$lines[28]);
+                    unset($lines[39]);
+                    unset($lines[40],$lines[41],$lines[42],$lines[43],$lines[44],$lines[45],$lines[46],$lines[47]);
+                    unset($lines[58],$lines[59]);
                     unset($lines[60],$lines[61],$lines[62],$lines[63],$lines[64],$lines[65],$lines[66],$lines[67],$lines[68],$lines[69]);
                     unset($lines[70],$lines[71],$lines[72],$lines[73],$lines[74],$lines[75],$lines[76],$lines[77],$lines[78],$lines[79]);
-                    unset($lines[80],$lines[81],$lines[82],$lines[83],$lines[84],$lines[85],$lines[86]);
+                    unset($lines[80],$lines[81],$lines[82],$lines[83],$lines[84],$lines[85],$lines[86],$lines[87],$lines[86]);
+                    unset($lines[96]);
     // END OF PRODUCTION SPECIFIC CODE
                     // END OF SPECIFIC LINES DELETION
                     // parse every lines
@@ -117,9 +120,9 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                             $value_for_db_insert="'";
                             foreach ($line as $key=>$element) {
                                 // START OF SPECIFIC COLUMN DELETION
-                                // array slice here
-                                // if linE != 87 à 96 supprimer element avec inception
-                                // else supprimer element mais sans inception
+// (prendre juste le else, if pas pour le moment car le inception simple ne sert que pour le graphique et c'est pas clair // if linE != 87 à 96 supprimer tout element inutile dont inception simple else supprimer tout element inutile mais sans inception simple
+// supprimer tout element inutile dont fund et inception simple
+// enlever le %
                                 // END OF SPECIFIC COLUMN DELETION
                                 // parse every lines
                                 $value_for_db_insert.=$element."', '";
@@ -128,7 +131,14 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                             // remove last comma
                             $value_for_db_insert = substr($value_for_db_insert,0,strlen($value_for_db_insert)-3);
                             // then insert
-                            //WIP $result = $db->exec("INSERT INTO $dbTable VALUES(".$value_for_db_insert.")");
+                    // START OF SPECIFIC INSERT
+// if line = x alors fund = act/bal/cons en mappant dans les parentheses apres le $table les bonnes colonnes
+// & table = perf_after_tax
+// if line = x alors fund = act/bal/cons en mappant dans les parentheses apres le $table les bonnes colonnes
+// & table = perf_table
+// test: echo $insertDB
+                    // END OF SPECIFIC INSERT
+                            //WIP $result = $db->exec("INSERT INTO $Table VALUES(".$value_for_db_insert.")");
                             echo 'value: <br>';
                             var_dump($value_for_db_insert);
 
@@ -145,7 +155,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                     echo "Your CSV schema is invalid.";
                     echo "<br><strong>Your document header columns is: </strong>";
                     var_dump($firstline);
-                    echo "<br><strong>Must be: </strong>";
+                    echo "<br><strong>Awaiting: </strong>";
                     var_dump($csvSchema);
                     echo "<br><strong>Difference: </strong>";
                     var_dump($diffArray);
@@ -153,7 +163,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
             }
             else{
                 echo "Your CSV schema is invalid.";
-                echo "<br><br><strong>Must be: </strong>";
+                echo "<br><br><strong>Awaiting: </strong>";
                 var_dump($csvSchema);
             }
             
