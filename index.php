@@ -1,10 +1,15 @@
 <?php
 /*
+NOTE:
+If there is the problem with the data, it's probably due a file format
+How to fix:
+- We will need to change the value of "PHP_EOL" by a "\r\n" or "\r" in $lines = explode(PHP_EOL, $csvData);
+- Also change the value of "MilfordCsvSchemaProblematicColumns" in setting_prod
+
 TO DO
 - ajouter la suppression de la 2eme table
-- unset valeur pour le graph
 - ecrire ce qui est en commentaire pour le moment
-
+--
 - ajouter la ligne pour mettre à jour le graph
 - ajouter la maj du titre
 - ajouter un test pour controler le format Windows du doc: verifier si la lines1 est définie
@@ -73,7 +78,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
             // parse every lines
             $lines = explode(PHP_EOL, $csvData);
             if(isset($lines[2])){
-                $firstline = explode(',', $lines[2]);// PRODUCTION SPECIFIC CODE: the header is ont line 3
+                $firstline = explode(',', $lines[2]);// PRODUCTION SPECIFIC CODE: the header is on line 3
             // check the first line concordance
                 if($firstline===$csvSchema){
     // !!!!!!!!!!!!! A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
@@ -114,17 +119,32 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
     // END OF PRODUCTION SPECIFIC CODE
                     // END OF SPECIFIC LINES DELETION
                     // parse every lines
-                    foreach($lines as $line) {
-                        // cut every element of the line to format
-                        $line = explode(',', $line);
-                            $value_for_db_insert="'";
-                            foreach ($line as $key=>$element) {
-                                // START OF SPECIFIC COLUMN DELETION
-// (prendre juste le else, if pas pour le moment car le inception simple ne sert que pour le graphique et c'est pas clair // if linE != 87 à 96 supprimer tout element inutile dont inception simple else supprimer tout element inutile mais sans inception simple
+                    foreach($lines as $column) {
+                        // cut every element of the column to format
+                        $column = explode(',', $column);
+// START OF SPECIFIC COLUMN DELETION
+// (prendre juste le else, if pas pour le moment car le inception simple ne sert que pour le graphique et c'est pas clair // if column != 87 à 96 supprimer tout element inutile dont inception simple else supprimer tout element inutile mais sans inception simple
 // supprimer tout element inutile dont fund et inception simple
-// enlever le %
-                                // END OF SPECIFIC COLUMN DELETION
-                                // parse every lines
+// enlever le % (seulement si )
+                        unset($column[0],$column[1],$column[2],$column[3],$column[9]);
+                        unset($column[11],$column[13],$column[15],$column[16],$column[17],$column[18],$column[19]);
+                        unset($column[20],$column[21],$column[22]);
+// END OF SPECIFIC COLUMN DELETION
+                            $value_for_db_insert="'";
+                            foreach ($column as $key=>$element) {
+                                // parse every columns
+// START OF SPECIFIC VALUE FORMAT
+                            $caseWithJustASpace = "\r";
+                            // supprime la valeur de fin si c'est case non vide et pas juste un espace et contie
+                            // delete the end value if value not empty or contains just a space and contains a "%"
+                            if (!empty($element) and $element!=$caseWithJustASpace and strstr($element,"%")) {
+                                $element = substr($element,0,strlen($element)-1);
+                                // delete the end value if still contains a "%"
+                                if (strstr($element,"%")){
+                                    $element = substr($element,0,strlen($element)-1);
+                                }
+                            }
+// END OF SPECIFIC VALUE FORMAT
                                 $value_for_db_insert.=$element."', '";
                             }
     // !!!!!!!!!!!!! A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
@@ -132,9 +152,9 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                             $value_for_db_insert = substr($value_for_db_insert,0,strlen($value_for_db_insert)-3);
                             // then insert
                     // START OF SPECIFIC INSERT
-// if line = x alors fund = act/bal/cons en mappant dans les parentheses apres le $table les bonnes colonnes
+// if column = x alors fund = act/bal/cons en mappant dans les parentheses apres le $table les bonnes colonnes
 // & table = perf_after_tax
-// if line = x alors fund = act/bal/cons en mappant dans les parentheses apres le $table les bonnes colonnes
+// if column = x alors fund = act/bal/cons en mappant dans les parentheses apres le $table les bonnes colonnes
 // & table = perf_table
 // test: echo $insertDB
                     // END OF SPECIFIC INSERT
