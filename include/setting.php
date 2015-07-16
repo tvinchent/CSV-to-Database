@@ -4,10 +4,11 @@
 // $dbName="";
 // $dbUsername="";
 // $dbPassword="";
-// $dbTable="";
+// $dbTable1="";
+// $dbTable2="";
 
 // Put you own scv schema here
-// $csvSchema = array('name','age','skill');
+// $csvSchema = array('headerColums1','headerColums2','etc..');
 
 // control if you have filled you own settings
 if (!isset($dbHost) or !isset($dbName) or !isset($dbUsername) or !isset($dbPassword) or !isset($dbTable) or !isset($csvSchema) ) {

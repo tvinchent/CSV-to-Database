@@ -7,7 +7,6 @@ How to fix:
 - Also change the value of "MilfordCsvSchemaProblematicColumns" in setting_prod
 
 TO DO
-- ajouter la suppression de la 2eme table
 - ecrire ce qui est en commentaire pour le moment
 --
 - ajouter la ligne pour mettre à jour le graph
@@ -91,13 +90,24 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
     // !!!!!!!!!!!!! Et ensuite avoir à les contourner au moyen de exit
             // db query
                     $db = new PDO('mysql:host='.$dbHost.';dbname='.$dbName.';charset=utf8', $dbUsername, $dbPassword);
-                    // check if table is empty
-                    $selectall = $db->query("SELECT * FROM $dbTable");
+                    // check if table1 is empty
+                    $selectall = $db->query("SELECT * FROM $dbTable1");
                     $result = $selectall->fetch();
                     $counttable = (count($result));
                     // if not empty: delete current value before inserting
                     if($counttable > 1){
-                        $delete = $db->prepare("DELETE FROM $dbTable");
+                        $delete = $db->prepare("DELETE FROM $dbTable1");
+                        $delete->execute();
+                        $count = $delete->rowCount();
+                        print("Deleted $count rows.\n");
+                    }
+                    // check if table2 is empty
+                    $selectall = $db->query("SELECT * FROM $dbTable2");
+                    $result = $selectall->fetch();
+                    $counttable = (count($result));
+                    // if not empty: delete current value before inserting
+                    if($counttable > 1){
+                        $delete = $db->prepare("DELETE FROM $dbTable2");
                         $delete->execute();
                         $count = $delete->rowCount();
                         print("Deleted $count rows.\n");
