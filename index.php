@@ -7,10 +7,9 @@ How to fix:
 - Also change the value of "MilfordCsvSchemaProblematicColumns" in setting_prod
 
 TO DO
-- ecrire ce qui est en commentaire pour le moment
---
 - ajouter la ligne pour mettre à jour le graph
 - ajouter la maj du titre
+- faire un update ou insert selon (besoin pour cela de reecrire de nouvelles chaine
 - ajouter un test pour controler le format Windows du doc: verifier si la lines1 est définie
 --
 - transformer en plugin wordpress
@@ -249,6 +248,17 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
     // !!!!!!!!!!!!! END OF A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
                     }
     // !!!!!!!!!!!!! A DEPLACER DANS UNE FONCTION DEDIE A L'INSERTION
+                    // insert old value
+                    $result = $db->exec("INSERT INTO `perf_table` (`fund`, `1_month`, `3_months`, `6_months`, `1_year`, `2_years`, `3_years`, `5_years`, `since_inception`) VALUES
+                    ('act_b', 0.8, 2.41, 4.88, 10, 10, 10, 10, 10),
+                    ('bal_b', -2.02, -1.83, 2.85, 11.39, 13.57, 18.98, 14.02, 3.83),
+                    ('cons_b', 0.32, 0.92, 1.83, 3.72, 3.28, NULL, NULL, 3.12),
+                    ('dyn_b', -7.07, -4.67, 2.5, 7.15, NULL, NULL, NULL, 4.04),
+                    ('glob_b', 0.67, 2.05, 4.15, 8.47, 8.05, NULL, NULL, 8.01),
+                    ('inc_b', 0.32, 0.92, 1.83, 3.72, 3.28, 3.08, 3.02, 3),
+                    ('tas_b', -0.99, 1.18, 7.32, 11.64, 11.51, 15.02, 11.44, 2.87),
+                    ('x_act_b', 0.8, 2.41, 4.88, 10, 10, 10, 10, 10),
+                    ('x_bal_b', -2.02, -1.83, 2.85, 11.39, 13.57, 18.98, 14.02, 3.83)");
                     // close db connection
                     $db = null;
                     echo "Your CSV data has been successfully inserted into the database";
