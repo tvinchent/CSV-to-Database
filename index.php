@@ -66,20 +66,6 @@ Refactorisation:
 - [fonction] envoie BDD (use / herite de prepare for BDD)
 */
 
-$var1 = "variable1";
-$var2 = "variable3";
-$tableau = array($var1, $var2);
- 
-switch ($tableau){
-    case array("variable1", "variable2"):
-        echo "Le tableau correspond !";
-    break;
-     
-    case array(NULL, NULL):
-        echo "Le tableau ne correspond pas.";
-    break; 
-}
-
 // include setting
 if (file_exists("include/setting_prod.php")) include_once 'include/setting_prod.php'; else include_once 'include/setting.php';
 
