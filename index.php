@@ -172,6 +172,7 @@ if(isset($_POST["submit"]) && isset($_FILES["csv"])){
                     echo "<br><strong>Awaiting: </strong>";
                     var_dump($csvSchema);
                     echo "<br><strong>Difference: </strong>";
+                    $diffArray = array_diff_assoc($firstline, $csvSchema);
                     var_dump($diffArray);
                 }
             }
